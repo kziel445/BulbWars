@@ -420,7 +420,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goldPerTime: 10
-  secondsToGold: 2
+  secondsToGold: 4
 --- !u!1 &8010202289013883001
 GameObject:
   m_ObjectHideFlags: 0

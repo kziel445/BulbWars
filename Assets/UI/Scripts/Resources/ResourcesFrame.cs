@@ -14,6 +14,7 @@ namespace UI
         {
             instance = this;       
         }
+        
         void Start()
         {
             statistics = GameObject.Find("PlayerStatistics").GetComponent<Statistics.Statistics>();
@@ -21,11 +22,10 @@ namespace UI
 
         void Update()
         {
-            gameObject.transform.GetChild(0).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = statistics.money.ToString();
-            gameObject.transform.GetChild(1).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = statistics.units.ToString();
-            gameObject.transform.GetChild(2).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = statistics.TimerString();
+            gameObject.transform.Find("Money").GetChild(0).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = statistics.money.ToString();
+            gameObject.transform.Find("Units").GetChild(0).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = statistics.units.ToString();
+            gameObject.transform.Find("Timer").GetChild(0).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = statistics.TimerString();
         }
-        
     }
 }
 

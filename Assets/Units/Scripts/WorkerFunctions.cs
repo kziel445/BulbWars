@@ -10,10 +10,12 @@ namespace Units
         [SerializeField] float buildingSpeedMultiply = 1;
         public bool isRepairing = false;
         public GameObject targetToRepair;
+
         private void Awake()
         {
             unit = gameObject.GetComponent<UnitRTS>();    
         }
+
         void Update()
         {
             if (unit.IfCommand == true)
@@ -21,11 +23,13 @@ namespace Units
             if (isRepairing == true)
                 GoToRepairing();
         }
+
         public void SetRepairValues(bool Repair, GameObject target = null)
         {
             isRepairing = Repair;
             targetToRepair = target;
         }
+
         public void Repair()
         {
             var targetHealthHandler = targetToRepair
@@ -44,11 +48,11 @@ namespace Units
             }
             else RepairAnimation(false);
         }
+
         public void GoToRepairing()
         {
             if(targetToRepair != null 
-                && targetToRepair
-                    .GetComponentInChildren<Buildings.BuildingRTS>().isBuilded)
+                && targetToRepair.GetComponentInChildren<Buildings.BuildingRTS>().isBuilded)
             {
                 targetToRepair = null;
                 RepairAnimation(false);
@@ -61,6 +65,7 @@ namespace Units
             }
             else RepairAnimation(false);
         }
+        
         public void RepairAnimation(bool TurnOn)
         {
             if (TurnOn)

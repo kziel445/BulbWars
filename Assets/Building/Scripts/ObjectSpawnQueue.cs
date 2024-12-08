@@ -48,15 +48,11 @@ namespace Buildings
             }
             catch
             {
-                Debug.Log("Units goes wrong object");
-                Debug.Log(actionList);
-                Debug.Log(objectToStoreUnits);
+                Debug.LogWarning("Units goes wrong object " + actionList + " " + objectToStoreUnits);
             }
-            
         }
         public void StartQueueTimer(string objectToSpawn)
         {
-            
             if (IsUnit(objectToSpawn))
             {
                 Units.UnitBasic unit = IsUnit(objectToSpawn);
@@ -70,7 +66,6 @@ namespace Buildings
                 gameObject.transform.GetComponentInChildren<Text>().text = spawningQueueTimer.Count.ToString();
             }
             else Debug.Log($"{objectToSpawn} is not spawnable");
-            Debug.Log("Corutine");
             if (spawnQueue.Count == 1)
             {
                 gameObject.GetComponent<SpawnTimer>().StartCoroutine(gameObject.GetComponent<SpawnTimer>().SpawnQueue());
@@ -79,19 +74,16 @@ namespace Buildings
             {
                 gameObject.GetComponent<SpawnTimer>().StopAllCoroutines();
             }
-
         }
         public void Spawn()
         {
             string objectName = spawnTypes[0].ToString() + "s";
-            //objectName = spawnQueue[0].GetComponent<Units.Player.PlayerRTS>().baseStats.unitClass;
             GameObject unit = Instantiate(
                 spawnQueue[0],
-                //spawnTMP[0].Item4,
                 new Vector3(
-                    gameObject.transform.position.x,
-                    gameObject.transform.position.y - 0.5f,
-                    gameObject.transform.position.z
+                    transform.position.x,
+                    transform.position.y - gameObject.transform.Find("Sprite").GetComponent<SpriteRenderer>().bounds.size.y/2,
+                    transform.position.z
                     ),
                 Quaternion.identity,
                 objectToStoreUnits.Find(objectName.Replace(" ", ""))
@@ -103,6 +95,7 @@ namespace Buildings
             Units.UnitBasic settings = Units.UnitHandler.instance.GetUnitSettings(objectName);
             sideUnit.baseStats = settings.baseStats;
             sideUnit.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = settings.classColor;
+            sideUnit.GetComponent<Pathfinding.AIPath>().maxSpeed = settings.baseStats.movementSpeed;
             data.unitsRecruted++;
         }
         public Units.UnitBasic IsUnit(string name)
@@ -111,6 +104,7 @@ namespace Buildings
             {
                 foreach (Units.UnitBasic unit in actionList.basicUnits)
                 {
+                    Debug.Log(unit.name + " " + name);
                     if (unit.name == name)
                     {
                         return unit;
@@ -119,7 +113,6 @@ namespace Buildings
             }
             return null;
         }
-        
     }
 }
 

@@ -12,12 +12,13 @@ namespace Statistics
         private RectTransform graphContainer;
         [SerializeField] private RectTransform labelTemplate;
         [SerializeField] float unitsPointModifier = 50;
-        //tmp
+
         Data dataSet;
+        
         private void Awake() 
         {
             graphContainer = transform.Find("GraphContainer").GetComponent<RectTransform>();
-            //tmp data
+            //data set if Player data not exist, when loaded only scene "Statistics"
             dataSet = new Data();
             dataSet.datas = new List<DataRecord>(){
                 new DataRecord(0,100,4),
@@ -29,9 +30,11 @@ namespace Statistics
             dataSet.moneyCollected = 40000;
             dataSet.timer = 100;
             dataSet.unitsRecruted = 40;
+
             if(GameObject.Find("PlayerData")!= null)
                 dataSet = GameObject.Find("PlayerData").GetComponent<Data>();
         }
+
         private GameObject AddPoint(Vector2 anchoredPosition)
         {
             GameObject gameObject = new GameObject("circle", typeof(Image));
@@ -47,13 +50,14 @@ namespace Statistics
 
             return gameObject;
         }
-        private void ShowGraph(Dictionary<float,int> values)
+
+        private void ShowGraph(Dictionary<float,float> values)
         {
             float graphHeight = graphContainer.sizeDelta.y;
             float graphWidth = graphContainer.sizeDelta.x;
             float xSize = graphWidth/values.Count;
             float yMaximum = 0;
-            foreach(KeyValuePair<float, int> datas in values)
+            foreach(KeyValuePair<float, float> datas in values)
             {
                 if(datas.Value>yMaximum) yMaximum = datas.Value;
             }
@@ -61,7 +65,7 @@ namespace Statistics
             
             int i = 0;
             GameObject lastPoint = null;
-            foreach(KeyValuePair<float, int> datas in values)
+            foreach(KeyValuePair<float, float> datas in values)
             {
                 float xPosition =  i * xSize;
                 float yPosition = (datas.Value / yMaximum) * graphHeight;
@@ -77,7 +81,6 @@ namespace Statistics
             int separatorCount = 10;
             for(int j = 0; j <= separatorCount; j++)
             {
-                //TODO setParent to instainate
                 RectTransform labelX = Instantiate(labelTemplate);
                 labelX.SetParent(graphContainer);
                 labelX.gameObject.SetActive(true);
@@ -99,6 +102,7 @@ namespace Statistics
                 labelY.GetComponent<TMPro.TextMeshProUGUI>().enabled = true;
             }
         }
+
         public float MaximumY(float maxValue)
         {
             int length = maxValue.ToString().Length;
@@ -110,9 +114,9 @@ namespace Statistics
             if(largestDigit >= 0) largestDigit = (int)largestDigit + 1;
             maxValue += largestDigit * Mathf.Pow(10, length-2);
             
-
             return maxValue;
         }
+
         private void CreateLines(Vector2 positionA, Vector2 positionB)
         {
             GameObject gameObject = new GameObject("Connection", typeof(Image));
@@ -133,6 +137,7 @@ namespace Statistics
             angl *= 180/Mathf.PI;
             rectTransform.localEulerAngles = new Vector3(0,0,angl);
         }
+        
         public void RemoveGraph()
         {
             foreach(Transform child in graphContainer.transform)
@@ -140,10 +145,11 @@ namespace Statistics
                 if(child.gameObject.name != "Background") Destroy(child.gameObject);
             }
         }
+
         public void ShowUnitsGraph()
         {
             RemoveGraph();
-            Dictionary<float, int> values = new Dictionary<float,int>();
+            Dictionary<float, float> values = new Dictionary<float,float>();
             foreach(DataRecord record in dataSet.datas)
             {
                 values.Add(record.time, record.units);
@@ -151,10 +157,11 @@ namespace Statistics
             color = new Color(128,0,0);
             ShowGraph(values);
         }
+
         public void ShowMoneysGraph()
         {
             RemoveGraph();
-            Dictionary<float, int> values = new Dictionary<float,int>();
+            Dictionary<float, float> values = new Dictionary<float,float>();
             foreach(DataRecord record in dataSet.datas)
             {
                 values.Add(record.time, record.money);
@@ -162,10 +169,11 @@ namespace Statistics
             color = new Color(0,255,0);
             ShowGraph(values);
         }
+
         public void ShowPointsGraph()
         {
             RemoveGraph();
-            Dictionary<float, int> values = new Dictionary<float,int>();
+            Dictionary<float, float> values = new Dictionary<float,float>();
             foreach(DataRecord record in dataSet.datas)
             {
                 values.Add(record.time, (int)Points(record.time, record.money, record. units));
@@ -173,17 +181,18 @@ namespace Statistics
             color = new Color(128,128,0);
             ShowGraph(values);
         }
-        public float Points(float time, int money, int units)
+
+        public float Points(float time, float money, int units)
         {
             if(time==0) time = 1;
             float points = (money + units * unitsPointModifier)/time;
             return points;
         }
+
         public void DestroyDatas()
         {
             Destroy(GameObject.Find("PlayerData"));
             Destroy(GameObject.Find("EnemyData"));
         }
     }
-    
 }

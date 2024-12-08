@@ -17,6 +17,7 @@ namespace Units
         public Transform aggroTarget;
         //change from public
         public bool hasAggro = false;
+        public bool reachedTargetOnce = true;
         private float distanceToTarget;
         public Transform missile;
         public float atkCooldown;
@@ -32,13 +33,18 @@ namespace Units
         {
             movePosition.SetMovePosition(targetPosition);
         }
+
         public void MoveToTarget(Transform targetPosition)
         {
             distanceToTarget = DistanceBetweenColliders(targetPosition);
-            if (distanceToTarget > baseStats.atkRange) MoveTo(targetPosition.position);
+            if (distanceToTarget > baseStats.atkRange)
+            {
+                MoveTo(targetPosition.position);
+                AttackAnimation(false);
+            }
             else MoveTo(transform.position);
         }
-        //for now, function check for random enemy(probably close to "0,0")
+        
         internal void CheckForEnenmyTargets(float aggroRange)
         {
             rangeColliders = Physics2D.OverlapCircleAll(transform.position, aggroRange);
@@ -67,6 +73,7 @@ namespace Units
             aggroTarget = aggroTmp;
             if (aggroTarget != null) hasAggro = true;
         }
+
         public void Attack()
         {
             if (aggroTarget != null)
@@ -80,12 +87,13 @@ namespace Units
             }
             else AttackAnimation(false);
         }
+
         public void FollowAndAttack()
         {
             //lost aggro
-            if (aggroTarget != null && Vector2.Distance(aggroTarget.position, gameObject.transform.position) > baseStats.aggroRange * 2)
+            if (aggroTarget != null && Vector2.Distance(aggroTarget.position, transform.position) > baseStats.aggroRange * 2 && reachedTargetOnce)
             {
-                MoveToTarget(gameObject.transform);
+                MoveTo(transform.position);
                 aggroTarget = null;
                 AttackAnimation(false);
                 hasAggro = false;
@@ -103,6 +111,7 @@ namespace Units
                 hasAggro = false;
             }       
         }
+
         public void AttackAnimation(bool TurnOn)
         {
             if (TurnOn)
@@ -117,8 +126,10 @@ namespace Units
             }
             else animator.SetBool("IfAttack", false);
         }
+        
         public float DistanceBetweenColliders(Transform targetObject)
         {
+
             var targetColliders = targetObject.GetComponents<Collider2D>();
             float tmpDistance = -1;
             foreach (Collider2D collider in targetColliders)
